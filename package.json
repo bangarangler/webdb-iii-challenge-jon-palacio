@@ -1,0 +1,30 @@
+{
+  "name": "webdb-iii-challenge-jon-palacio",
+  "version": "1.0.0",
+  "description": "<!--jp--> # Building an API using a Relational Database",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bangarangler/webdb-iii-challenge-jon-palacio.git"
+  },
+  "author": "JP",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bangarangler/webdb-iii-challenge-jon-palacio/issues"
+  },
+  "homepage": "https://github.com/bangarangler/webdb-iii-challenge-jon-palacio#readme",
+  "dependencies": {
+    "dotenv": "^7.0.0",
+    "express": "^4.16.4",
+    "knex": "^0.16.3",
+    "sqlite3": "^4.0.6"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  }
+}
