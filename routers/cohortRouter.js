@@ -35,6 +35,24 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+router.get("/:id/students", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const students = await db
+      .select("*")
+      .from("cohorts")
+      .where({ "cohorts.id": id })
+      .join("students", { "cohorts.id": "students.cohort_id" });
+    return !students.length
+      ? res.status(404).json({ message: "Cohort non exsistant" })
+      : res.status(200).json(students);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error getting student info Internal Issue" });
+  }
+});
+
 router.post("/", async (req, res) => {
   if (req.body.name === "") {
     return res
@@ -69,18 +87,22 @@ router.put("/:id", (req, res) => {
     });
 });
 
-router.delete('/:id', (req, res) => {
-db('cohorts').where({ id: req.params.id }).del()
-.then(count => {
-if(count > 0) {
-res.status(204).end()
-} else {
-res.status(404).json({ message: 'No Cohort found at ID, can\'t delete' })
-}
-})
-.catch(err => {
-res.status(500).json({ message: 'Internal Error', err })
-})
-})
+router.delete("/:id", (req, res) => {
+  db("cohorts")
+    .where({ id: req.params.id })
+    .del()
+    .then(count => {
+      if (count > 0) {
+        res.status(204).end();
+      } else {
+        res
+          .status(404)
+          .json({ message: "No Cohort found at ID, can't delete" });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({ message: "Internal Error", err });
+    });
+});
 
 module.exports = router;
