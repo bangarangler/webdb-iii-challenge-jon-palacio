@@ -5,9 +5,12 @@ exports.up = function(knex, Promise) {
 
     tbl
       .integer("cohort_id")
+      .unsigned()
       .notNullable()
       .references("id")
       .inTable("cohorts");
+
+    tbl.timestamps(true, true);
   });
 };
 
