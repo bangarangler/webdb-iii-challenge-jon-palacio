@@ -13,14 +13,13 @@ const knexConfig = {
 
 const db = knex(knexConfig);
 
-router.get("/", (req, res) => {
-  db("cohorts")
-    .then(cohort => {
-      res.status(200).json(cohort);
-    })
-    .catch(err => {
-      res.status(500).json({ message: "Internal Error", err });
-    });
+router.get("/", async (req, res) => {
+  try {
+    const cohorts = await db("cohorts");
+    res.status(200).json(cohorts);
+  } catch (err) {
+    res.status(500).json({ message: "Internal Error", err });
+  }
 });
 
 router.get("/:id", async (req, res) => {
@@ -71,38 +70,32 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", (req, res) => {
-  db("cohorts")
-    .where({ id: req.params.id })
-    .update(req.body)
-    .then(count => {
-      if (count > 0) {
-        res.status(200).json(count);
-      } else {
-        res.status(404).json({ message: "No Cohort found for that ID" });
-      }
-    })
-    .catch(err => {
-      res.status(500).json({ message: "Internal Error", err });
-    });
+router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const changes = req.body;
+  try {
+    const count = await db("cohorts")
+      .where({ id })
+      .update(changes);
+    const cohort = await db("cohorts").where({ id });
+    return count
+      ? res.status(200).json({ ...cohort[0] })
+      : res.status(404).json({ message: "Id Can Not Be Found" });
+  } catch (err) {}
 });
 
-router.delete("/:id", (req, res) => {
-  db("cohorts")
-    .where({ id: req.params.id })
-    .del()
-    .then(count => {
-      if (count > 0) {
-        res.status(204).end();
-      } else {
-        res
-          .status(404)
-          .json({ message: "No Cohort found at ID, can't delete" });
-      }
-    })
-    .catch(err => {
-      res.status(500).json({ message: "Internal Error", err });
-    });
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const count = await db("cohorts")
+      .where({ id })
+      .del();
+    return count
+      ? res.status(200).json(count)
+      : res.status(404).json({ message: "Can't Find!" });
+  } catch (err) {
+    res.status(500).json({ message: "Internal Error", err });
+  }
 });
 
 module.exports = router;
