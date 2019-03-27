@@ -13,14 +13,13 @@ const knexConfig = {
 
 const db = knex(knexConfig);
 
-router.get("/", (req, res) => {
-  db("students")
-    .then(student => {
-      res.status(200).json(student);
-    })
-    .catch(err => {
-      res.status(500).json({ message: "Internal Error", err });
-    });
+router.get("/", async (req, res) => {
+  try {
+    const students = await db("students");
+    res.status(200).json(students);
+  } catch (err) {
+    res.status(500).json({ message: "Internal Error", err });
+  }
 });
 
 router.get("/:id", async (req, res) => {
@@ -60,38 +59,34 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", (req, res) => {
-  db("students")
-    .where({ id: req.params.id })
-    .update(req.body)
-    .then(count => {
-      if (count > 0) {
-        res.status(200).json(count);
-      } else {
-        res.status(404).json({ message: "No Student Fount for that ID" });
-      }
-    })
-    .catch(err => {
-      res.status(500).json({ message: "Internal Error", err });
-    });
+router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const changes = req.body;
+  try {
+    const count = await db("students")
+      .where({ id })
+      .update(changes);
+    const student = await db("students").where({ id });
+    return count
+      ? res.status(200).json({ ...student[0] })
+      : res.status(404).json({ message: "ID can Not Be Found" });
+  } catch (err) {
+    res.status(500).json({ message: "Internal Server Error", err });
+  }
 });
 
-router.delete("/:id", (req, res) => {
-  db("students")
-    .where({ id: req.params.id })
-    .del()
-    .then(count => {
-      if (count > 0) {
-        res.status(204).end();
-      } else {
-        res
-          .status(404)
-          .json({ message: "No Student found at ID, can't delete" });
-      }
-    })
-    .catch(err => {
-      res.status(500).json({ message: "Internal Error", err });
-    });
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const count = await db("students")
+      .where({ id })
+      .del();
+    return count
+      ? res.status(200).json(count)
+      : res.status(404).json({ message: "Can't Find!" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Error", error });
+  }
 });
 
 module.exports = router;
