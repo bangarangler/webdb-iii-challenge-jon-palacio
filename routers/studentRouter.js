@@ -23,9 +23,6 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  //if (!req.params.id) {
-  //res.status(404).json({ message: "No Student found at that id" });
-  //}
   const stdntID = req.params.id;
   try {
     const student = await db("students")
@@ -36,6 +33,24 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: "Internal Error", err });
   }
 });
+
+// FINAL STRETCH GOAL BELOW WORKING CODE! STUDENT RETURNED BY THE GET :ID
+// ENDPOINT INCLUDES THE COHORT NAME AND REMOVES THE COHORT ID FIELDS. RETURNED
+// OBJECT LOOKS LIKE THIS: {ID: 1, NAME: 'LAMBDA STUDENT', COHORT: "FULL STACK
+// WEB"}
+//router.get("/:id", (req, res) => {
+//const id = req.params.id;
+//db("students")
+//.where("students.id", id)
+//.join("cohorts", "cohorts.id", "students.cohort_id")
+//.select("students.id", "students.name", "cohorts.name as cohort")
+//.then(student => {
+//res.status(200).json(student);
+//})
+//.catch(err => {
+//res.status(500).json({ message: "Internal Error!" });
+//});
+//});
 
 router.post("/", async (req, res) => {
   if (
